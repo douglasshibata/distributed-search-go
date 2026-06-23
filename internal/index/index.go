@@ -46,10 +46,20 @@ func (idx *InvertedIndex) AddDocument(id uint32, text string) {
 	}
 
 	for term, positions := range termPositions {
-		idx.Postings[term] = append(idx.Postings[term], Posting{
-			DocID:    id,
-			Position: positions,
-		})
+		// Check if this DocID is already in the postings for this term (idempotency)
+		exists := false
+		for _, p := range idx.Postings[term] {
+			if p.DocID == id {
+				exists = true
+				break
+			}
+		}
+		if !exists {
+			idx.Postings[term] = append(idx.Postings[term], Posting{
+				DocID:    id,
+				Position: positions,
+			})
+		}
 	}
 }
 
@@ -80,10 +90,14 @@ func Intersect(sets ...[]uint32) []uint32 {
 		return sets[0]
 	}
 
-	// Use a map to count occurrences
+	// Use a map to count occurrences, ensuring we only count each ID once per set.
 	counts := make(map[uint32]int)
 	for _, set := range sets {
+		setUnique := make(map[uint32]struct{})
 		for _, id := range set {
+			setUnique[id] = struct{}{}
+		}
+		for id := range setUnique {
 			counts[id]++
 		}
 	}
