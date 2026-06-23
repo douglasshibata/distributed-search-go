@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  coordinator:
+    build: .
+    command: ["-role=coordinator", "-port=8080", "-shards=shard-1-primary:8080;shard-1-replica:8080,shard-2-primary:8080;shard-2-replica:8080"]
+    ports:
+      - "8080:8080"
+    networks:
+      - search-net
+    depends_on:
+      - shard-1-primary
+      - shard-1-replica
+      - shard-2-primary
+      - shard-2-replica
+
+  shard-1-primary:
+    build: .
+    command: ["-role=shard", "-id=shard-1-primary", "-port=8080", "-replica-addr=shard-1-replica:8080"]
+    networks:
+      - search-net
+
+  shard-1-replica:
+    build: .
+    command: ["-role=shard", "-id=shard-1-replica", "-port=8080", "-replica-of=shard-1-primary:8080"]
+    networks:
+      - search-net
+
+  shard-2-primary:
+    build: .
+    command: ["-role=shard", "-id=shard-2-primary", "-port=8080", "-replica-addr=shard-2-replica:8080"]
+    networks:
+      - search-net
+
+  shard-2-replica:
+    build: .
+    command: ["-role=shard", "-id=shard-2-replica", "-port=8080", "-replica-of=shard-2-primary:8080"]
+    networks:
+      - search-net
+
+networks:
+  search-net:
+    driver: bridge
