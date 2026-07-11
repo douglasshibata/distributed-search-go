@@ -85,3 +85,21 @@ curl "http://localhost:8080/search?q=distributed+golang"
 ## 🛡️ Fault Tolerance
 
 The system automatically detects node failures. If a primary shard goes down, the Coordinator will attempt to route search requests to its replica. The background health check loop (running every 5 seconds) monitors node status and updates the active hash ring dynamically.
+
+---
+
+## 🛠️ Project Deep Dive & Technical Guide
+
+### 🎯 Main Purpose
+Distributed search engine in Go featuring consensus and clustering.
+
+### 🧰 Tecnologias Utilizadas (Tech Stack)
+- **Primary Technologies:** Docker / Docker Compose, Go 1.24.3
+- **Deployment Strategy:** Container-ready with standard Docker/Docker Compose integrations where applicable.
+
+### 🚀 Como Implantar e Executar (How to Deploy & Run)
+#### Go CLI / Service
+1. Build the module: `go build`.
+2. Execute: `./distributed-search-go` (or project executable name).
+
+---
